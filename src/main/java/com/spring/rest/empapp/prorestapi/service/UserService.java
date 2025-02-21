@@ -1,6 +1,7 @@
 package com.spring.rest.empapp.prorestapi.service;
 
 import com.spring.rest.empapp.prorestapi.model.User;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
@@ -18,7 +19,7 @@ public class UserService {
     public Optional<User> getUser(Long id) {
         return Optional.ofNullable(users.get(id));
     }
-
+    @Cacheable("users-cache")
     public List<User> getAllUsers() {
         return new ArrayList<>(users.values());
     }

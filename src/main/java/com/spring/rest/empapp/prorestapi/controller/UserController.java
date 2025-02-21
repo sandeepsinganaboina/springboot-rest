@@ -2,6 +2,10 @@ package com.spring.rest.empapp.prorestapi.controller;
 
 import com.spring.rest.empapp.prorestapi.model.User;
 import com.spring.rest.empapp.prorestapi.repo.UserRepo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,10 +17,12 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "User Management", description = "APIs for managing users")
 public class UserController {
 
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public UserController(UserRepo userRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
@@ -31,12 +37,15 @@ public class UserController {
         }
         user.setPassword(passwordEncoder.encode(user.getPassword())); // Encrypt password
         User savedUser = userRepo.save(user);
+        logger.info("New user saved ");
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
     // Get user by ID (requires authentication)
+    @Operation(summary = "Get all user for given id", description = "Fetches a user details for given id")
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
+        logger.info("New user logged in");
         Optional<User> user = userRepo.findById(Math.toIntExact(id));
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -45,6 +54,7 @@ public class UserController {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> getAllUsers() {
+        logger.info("Fetch all users for admin");
         return ResponseEntity.ok(userRepo.findAll());
     }
 
