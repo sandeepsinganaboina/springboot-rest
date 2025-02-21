@@ -34,21 +34,21 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
-    // ✅ Get user by ID (requires authentication)
+    // Get user by ID (requires authentication)
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         Optional<User> user = userRepo.findById(Math.toIntExact(id));
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // ✅ Get all users (ADMIN only)
+    // Get all users (ADMIN only)
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userRepo.findAll());
     }
 
-    // ✅ Update user details (only authenticated users can update)
+    // Update user details (only authenticated users can update)
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
         return userRepo.findById(Math.toIntExact(id))
@@ -61,7 +61,7 @@ public class UserController {
                 }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // ✅ Delete user (ADMIN only)
+    // Delete user (ADMIN only)
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
